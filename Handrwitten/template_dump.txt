@@ -1,0 +1,311 @@
+P000 [normal]: GLA UNIVERSITY, GREATER NOIDA
+P001 [normal]: Greater Noida – 201310, Uttar Pradesh, India
+P002 [normal]: 
+P003 [normal]: <TITLE OF THE PROJECT>
+P004 [normal]: SOFTWARE REQUIREMENT SPECIFICATION
+P005 [normal]: Version 1.0
+P006 [normal]: BACHELOR OF TECHNOLOGY
+P007 [normal]: in
+P008 [normal]: COMPUTER SCIENCE & ENGINEERING - AI
+P009 [normal]: Submitted By
+P010 [normal]: <FULL NAME OF STUDENT>
+P011 [normal]: Roll No.: <ROLL NUMBER>  |  Section: <SECTION>
+P012 [normal]: 
+P013 [normal]: SCHOOL / DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING / APPLICATIONS
+P014 [normal]: GLA UNIVERSITY, GREATER NOIDA – 201310
+P015 [normal]: <MONTH, YEAR OF SUBMISSION>
+P016 [normal]: 
+P017 [Heading 1]: How To Use This Template
+P018 [normal]: Read this page once. It is not part of your submission — delete it before you submit.
+P019 [Heading 2]: The five rules
+P020 [normal]: 1. Delete every grey box. Grey boxes are instructions. Each starts with the marker [REMOVE]. Before submitting, search the document for "[REMOVE]" — if it finds anything, you are not done.
+P021 [normal]: 2. One requirement per numbered line. If a line uses "and" to join two different behaviours, split it into two lines.
+P022 [normal]: 3. Every requirement uses "shall". "Shall" is a commitment you will be asked to demonstrate live.
+P023 [normal]: 4. Requirements must be falsifiable. Someone else must be able to run your application and decide, without asking you, whether the requirement is met. Fast, user-friendly, efficient, robust, accurate, scalable and seamless are not falsifiable — replace each with a number or delete it.
+P024 [normal]: 5. Do not copy the examples. Every example here is from an imaginary project called ShelfLife, which predicts how many units of each item a small grocery shop should reorder next week from its past sales records. It is deliberately not one of your projects.
+P025 [Heading 2]: You are not expected to know everything yet
+P026 [normal]: You have not built this system yet, so you cannot know exactly what it will look like. That is normal and the document is designed around it.
+P027 [normal]: So do not agonise over whether each requirement is exactly right. Write the full list of what you think the system should do in Section 5, without worrying about whether every line survives.
+P028 [normal]: Then, in Section 7, choose the five you will build first and sort the rest across the project stages. That choice is the part that matters. It is a decision, not a prediction, and you can make it today with what you know now. It is also what you will be asked about first at your next review.
+P029 [Heading 2]: Length
+P030 [normal]: Five to six pages, excluding the cover page and this page. If you are well over, you have padded it. A longer document is not a better document.
+P031 [Heading 2]: If you use an AI assistant
+P032 [normal]: You are not prohibited from using one. You will, however, be asked to defend this document verbally without it. Section 3 (Data Source and Baseline), Section 7.1 (MVP), Section 9 (Design Decisions) and Section 11 (Out of Scope) are the ones an assistant will fill convincingly and you will be unable to defend, because all four depend on facts about your specific dataset and your specific choices. Write those four yourself.
+P033 [Heading 2]: Before you submit
+P034 [normal]: Search for "[REMOVE]" — no results.
+P035 [normal]: Section 3 has real numbers in it, taken from opening your dataset.
+P036 [normal]: Section 7.1 names between three and seven FR IDs, with a reason for each.
+P037 [normal]: Revision History row 1 exists and reads v1.0.
+P038 [normal]: Save as: SRS_v1.0_<RollNumber>_<ShortProjectName>.pdf
+P039 [normal]: 
+P040 [Heading 1]: Revision History
+P041 [normal]: REQUIRED FOR v1.0
+P042 [normal]: 
+P043 [normal]: 
+P044 [Heading 1]: 1. Introduction
+P045 [normal]: REQUIRED FOR v1.0  —  Half a page in total.
+P046 [Heading 2]: 1.1 Purpose
+P047 [normal]: 
+P048 [normal]: <Write here.>
+P049 [Heading 2]: 1.2 Scope
+P050 [normal]: 
+P051 [normal]: <Write here.>
+P052 [Heading 2]: 1.3 Definitions
+P053 [normal]: 
+P054 [Heading 1]: 2. Overall Description
+P055 [normal]: REQUIRED FOR v1.0
+P056 [Heading 2]: 2.1 User Classes
+P057 [normal]: 
+P058 [Heading 2]: 2.2 Assumptions and Dependencies
+P059 [normal]: 
+P060 [normal]: <Assumption or dependency>
+P061 [normal]: <Assumption or dependency>
+P062 [normal]: <Assumption or dependency>
+P063 [Heading 2]: 2.3 Constraints
+P064 [normal]: 
+P065 [normal]: C1  <Constraint.>
+P066 [normal]: C2  <Constraint.>
+P067 [normal]: 
+P068 [Heading 1]: 3. Data Source and Baseline
+P069 [normal]: REQUIRED FOR v1.0  —  Complete this before you write Section 5.
+P070 [normal]: 
+P071 [normal]: 
+P072 [normal]: 
+P073 [normal]: 
+P074 [Heading 1]: 4. System Architecture
+P075 [normal]: REQUIRED FOR v1.0  —  One diagram and one short table.
+P076 [normal]: 
+P077 [normal]: <Insert Figure 1: System architecture diagram>
+P078 [normal]: Figure 1: <caption>
+P079 [normal]: 
+P080 [normal]: 
+P081 [Heading 1]: 5. Functional Requirements
+P082 [normal]: REQUIRED FOR v1.0
+P083 [Heading 2]: 5.1 <Module 1, e.g. Data Upload and Validation>
+P084 [normal]: FR-1.1  The system shall <do something specific and checkable>.
+P085 [normal]: FR-1.2  The system shall reject <specific invalid input>, returning <specific error>.
+P086 [normal]: FR-1.3  The system shall <do something specific and checkable>.
+P087 [normal]: FR-1.4  The system shall <do something specific and checkable>.
+P088 [Heading 2]: 5.2 Model-backed Requirements
+P089 [normal]: 
+P090 [normal]: FR-2.1  The system shall accept <input> and reject <invalid input> with <error>.
+P091 [normal]: FR-2.2  The system shall return <what the user gets> for a valid request.
+P092 [normal]: FR-2.3  The system shall present <output> to the user together with <how uncertain it is>.
+P093 [normal]: FR-2.4  The system shall, when the model is unavailable or returns nothing usable, <specific fallback behaviour>.
+P094 [normal]: FR-2.5  The system shall allow <user class> to <override or correct> the model output.
+P095 [Heading 1]: 6. Non-Functional Requirements
+P096 [normal]: REQUIRED FOR v1.0  —  Exactly four.
+P097 [normal]: 
+P098 [normal]: NFR-1  The system shall <how fast, containing a number>.
+P099 [normal]: NFR-2  The system shall <security mechanism, named specifically>.
+P100 [normal]: NFR-3  The system shall <what is recorded, and with what identifier>.
+P101 [normal]: NFR-4  The system shall <your choice — reliability, usability, or maintainability>.
+P102 [normal]: 
+P103 [Heading 1]: 7. Build Plan
+P104 [Heading 2]: 7.1 Minimum Viable Product
+P105 [normal]: REQUIRED FOR v1.0  —  The most important half-page in this document.
+P106 [normal]: 
+P107 [normal]: 
+P108 [normal]: Deliberately not in the MVP: <Name one requirement that felt important but did not make the cut, and say what you would need to know before adding it.>
+P109 [Heading 2]: 7.2 Build Order
+P110 [normal]: REQUIRED FOR v1.0  —  Sort your requirements into the stages below. Do not invent dates — they are already fixed.
+P111 [normal]: 
+P112 [normal]: For reference, the fixed project stages:
+P113 [normal]: 
+P114 [normal]: Your plan:
+P115 [normal]: 
+P116 [Heading 1]: 8. Data Requirements
+P117 [Heading 2]: 8.1 Entities
+P118 [normal]: REQUIRED FOR v1.0  —  One entity fully specified. Name the others in a list.
+P119 [normal]: 
+P120 [normal]: Entity: <EntityName>
+P121 [normal]: 
+P122 [normal]: Other entities: <Name them only. Full tables come in a later version.>
+P123 [Heading 2]: 8.2 Entity Relationship Diagram
+P124 [normal]: NOT REQUIRED FOR v1.0  —  Leave this heading and its grey box in place; complete it in a later version. 
+P125 [normal]: 
+P126 [Heading 1]: 9. Design Decisions and Alternatives Considered
+P127 [normal]: REQUIRED FOR v1.0  —  Three rows.
+P128 [normal]: 
+P129 [Heading 1]: 10. Acceptance Criteria
+P130 [normal]: REQUIRED FOR v1.0  —  Four, covering your MVP.
+P131 [normal]: 
+P132 [normal]: AC-1  <A scenario performed live, and its expected outcome.>
+P133 [normal]: AC-2  <A scenario performed live, and its expected outcome.>
+P134 [normal]: AC-3  <A failure scenario, and how the system responds.>
+P135 [normal]: AC-4  <A scenario performed live, and its expected outcome.>
+P136 [Heading 1]: 11. Out of Scope for This Release
+P137 [normal]: REQUIRED FOR v1.0  —  Three items.
+P138 [normal]: 
+P139 [normal]: <Item>. <One or two sentences on why it is excluded.>
+P140 [normal]: <Item>. <One or two sentences on why it is excluded.>
+P141 [normal]: <Item>. <One or two sentences on why it is excluded.>
+P142 [normal]: 
+P143 [Heading 1]: Appendix A: State Model
+P144 [normal]: NOT REQUIRED FOR v1.0  —  Leave this heading and its grey box in place; complete it in a later version. Delete this appendix entirely if nothing in your system has a lifecycle.
+P145 [Heading 1]: Appendix B: Traceability
+P146 [normal]: NOT REQUIRED FOR v1.0  —  Leave this heading and its grey box in place; complete it in a later version. Task card IDs are added as soon as your board exists; test case IDs once you have written tests.
+P147 [normal]: 
+P148 [normal]: 
+
+=== TABLE 0 (1x2) ===
+Under the Supervision of <SUPERVISOR NAME> GLA University, Greater Noida | Reviewed By <REVIEWER NAME> GLA University, Greater Noida
+
+=== TABLE 1 (1x1) ===
+[REMOVE] What goes here: This is version 1.0 of your requirements, written before you have built anything. It is expected to be wrong in places. Done when: You have stopped trying to make it permanently correct and started trying to make it honestly specific. Requirements that change with a reason logged in the Revision History are graded positively. Requirements that change silently are not. You are not being asked to predict the future — you are being asked to state what you currently believe, precisely enough that you can tell later whether you were wrong.
+
+=== TABLE 2 (1x1) ===
+[REMOVE] What goes here: A log of every change made to this document after v1.0 is submitted. Done when: Row 1 exists and reads v1.0. From then on you add a row whenever a requirement is added, removed, reworded, or moved into or out of the MVP. You never edit an old row. This table is how iterative development is graded — it is the evidence that you learned something while building.
+
+=== TABLE 3 (5x4) ===
+Version | Date | Change | Reason
+1.0 | <DD-MM-YYYY> | Initial version | First submission
+<1.1> | <DD-MM-YYYY> | <e.g. FR-2.2 removed from MVP; FR-1.4 added to MVP> | <e.g. Weekly aggregation turned out to need no separate upload screen>
+ |  |  | 
+ |  |  | 
+
+=== TABLE 4 (1x1) ===
+[REMOVE] What goes here: Two or three sentences stating what this document specifies. Not what the project is — that is 1.2. Good: This document specifies the requirements of ShelfLife v1.0, a reorder recommendation tool for small grocery shops. It is the baseline against which the implementation and its test cases are verified. Bad: The purpose of this project is to make a useful application using latest technologies like machine learning.
+
+=== TABLE 5 (1x1) ===
+[REMOVE] What goes here: What the system does, who uses it, and where the build stops. Done when: You have written at least one sentence beginning "The system does not ...". The boundary is stated, not implied. Good: The system produces a suggested reorder quantity for each item a shop stocks, for the coming week, from that shop's own past sales. The system does not place orders with suppliers, does not track deliveries, and does not price items. Bad: The scope is very wide and it can be used by any business anywhere for many purposes.
+
+=== TABLE 6 (1x1) ===
+[REMOVE] What goes here: Only terms specific to your problem domain, or terms a reader could misread. Four to six rows. API, database and JSON do not need defining. The domain word you invented does.
+
+=== TABLE 7 (4x2) ===
+Term | Definition
+Reorder window | The seven-day period a suggestion covers, beginning the Monday after the suggestion is generated.
+<Term> | <Definition>
+<Term> | <Definition>
+
+=== TABLE 8 (1x1) ===
+[REMOVE] What goes here: The distinct kinds of people who use the system, and what each may do. Done when: Every class here is referenced by at least one requirement in Section 5. A class that appears nowhere in Section 5 was invented for the document — delete it. One or two classes is normal for a solo project. If you list an Admin you never build, it will be visible at the viva.
+
+=== TABLE 9 (3x3) ===
+User class | Who they are | What they may do
+Shop owner | The authenticated owner of one shop. | Upload sales history, view and adjust reorder suggestions.
+<Class> | <Description> | <Permissions>
+
+=== TABLE 10 (1x1) ===
+[REMOVE] What goes here: Things you are taking to be true, and outside things you rely on. If one turns out false, part of your project breaks — that is exactly what belongs here. Done when: Every external service, library and hosting platform you depend on is named, with its tier, its limit, and what your system does when it is unavailable. Good: The system depends on Render's free web service tier, which sleeps after 15 minutes of inactivity, so first-request latency after idle is not controllable by the system. Bad: We assume the internet will be available and the user has a device. Decide now what happens when a service you depend on is down; you will otherwise decide it at 2 a.m. the night before your demo. If you depend on no external services, say so — that is a valid answer.
+
+=== TABLE 11 (1x1) ===
+[REMOVE] What goes here: Limits you did not choose and cannot remove: platform, cost, data availability, time. Done when: Each is something you could not change even if you wanted to. If you could change it, it is a design decision and belongs in Section 9. Good: C1 The dataset contains daily totals only, with no per-transaction records, so the system cannot model within-day demand. Bad: C1 We have limited time and limited knowledge of machine learning.
+
+=== TABLE 12 (1x1) ===
+[REMOVE] What goes here: The dataset your model learns from, what exactly it predicts, how you will measure it, and what score a trivial method already achieves. Done when: You have opened the dataset and looked at it. Every row marked required below has a real value, not a plan to find one. If you cannot fill "Number of rows and columns", you do not yet have a dataset, and that is the most urgent thing in your project. Why the baseline matters: a model that does not beat "always predict the average" is not a feature, it is a slower way of computing an average. You need that number before you start building, not at the end. How to compute it: split your data, then ignore every input column. If you are predicting a number, predict the average of the training rows for every test row and measure the error. If you are predicting a category, predict the most common category every time and measure the same way. That is roughly ten lines of code and needs no machine learning.
+
+=== TABLE 13 (14x3) ===
+Item | Value | Required now?
+Dataset name | <Name> | Yes
+Source and URL | <Kaggle, UCI, a government portal, or collected by you> | Yes
+Licence / terms of use | <Check this. A dataset you may not use is not a dataset.> | Yes
+Number of rows and columns | <Actual numbers, from opening the file> | Yes
+Prediction target | <The exact column or quantity being predicted> | Yes
+Task type | <Predicting a number / yes-no / one of several categories> | Yes
+Class balance | <Classification only: the percentage split of the target. Write N/A if predicting a number.> | Yes
+Primary evaluation metric | <One metric. Not three.> | Yes
+Why that metric | <One sentence tying it to the cost of being wrong for your user> | Yes
+Level 0 baseline and its score | <Always predict the average, or the most common category. State the score.> | Yes
+Known data quality problems | <Missing values, duplicates, suspicious ranges — what you actually saw> | Yes
+Level 1 baseline and its score | <A simple model: linear or logistic regression, or a shallow tree.> | Later
+Target for this release | <The number your model must beat for the feature to be worth shipping> | Later
+
+=== TABLE 14 (1x1) ===
+[REMOVE] What goes here: Two things students get wrong here. Choosing the metric. If you are predicting a number, use MAE or RMSE — accuracy is meaningless for numbers. If you are predicting a category and one outcome occurs in fewer than 20% of your rows, do not use accuracy: a model that always predicts the common outcome will score above 80% and be useless. Use F1 or recall instead, and say which.
+
+=== TABLE 15 (1x1) ===
+[REMOVE] What goes here: A filled example, for calibration. Good: Task type: predicting a number. Metric: MAE. Why: the shop over-orders or under-orders by that many units, which is the cost they actually feel. Level 0: predicting the item's own average gives MAE 4.1 units. Bad: Level 0 baseline: will be calculated later. Metric: accuracy. Target: 95%.
+
+=== TABLE 16 (1x1) ===
+[REMOVE] What goes here: A diagram showing your components and how data moves between them, then a table naming each component and its single responsibility. Done when: Every box in the diagram appears in the table, and every component has one responsibility. A component you cannot describe in one sentence is two components. The model must appear as one box among several, not as the whole diagram. Draw it in draw.io or Excalidraw, or on paper and photograph it. Show where training happens and where prediction happens — these are usually different places, and confusing them is the most common architecture mistake in ML projects.
+
+=== TABLE 17 (5x2) ===
+Component | Responsibility
+Ingest | Accepts an uploaded sales CSV, validates its columns, and stores the rows.
+Prediction service | Given a shop and a week, returns a predicted quantity per item.
+<Component> | <Single responsibility>
+<Component> | <Single responsibility>
+
+=== TABLE 18 (1x1) ===
+[REMOVE] What goes here: What the system does for its user. Write the full list in 5.1 and 5.2. You will choose which of them to build first in Section 7. Done when: Each line could be handed to a tester who has never met you, and that tester would know how to check it. At least two describe what happens when something goes wrong — a specification with only the happy path is incomplete. Good: FR-1.2 The system shall reject an uploaded file that is missing any of the columns date, item_id or quantity, naming the missing column in the error. Bad: FR-1.2 The system will efficiently handle all user uploads and give proper output quickly. Fifteen to twenty-five requirements in total is normal. Do not agonise over whether each one is exactly right — the list will change, and that is expected. The IDs you assign here are reused on your task board, in your test case document, and at your viva, so once assigned, an ID is never reused for a different requirement.
+
+=== TABLE 19 (1x1) ===
+[REMOVE] What goes here: The requirements where your model is involved. Every line describes what the system does for its user; the model is how it does it, not what it is. Done when: No requirement here is a claim about accuracy in isolation. Accuracy targets live in Section 3, not here. Good: FR-2.4 The system shall, when the prediction service is unavailable, display the Level 0 baseline quantity labelled as an estimate, rather than showing an empty result. Bad: FR-2.4 The model will achieve 95% accuracy using Random Forest. Six things are worth thinking about for a model. Four of them are functional and belong here: (1) what input the model accepts and how invalid input is rejected; (2) what the system returns for a valid request; (3) how the output is shown to the user, including how uncertain it is; (4) what the system does when the model is unavailable or returns nothing usable. The other two are not functional requirements and belong in Section 6 instead: how quickly a prediction must come back, and what gets recorded so you can evaluate the model later. Item 4, and human override below, are the two most students skip and the two most asked about at the viva.
+
+=== TABLE 20 (1x1) ===
+[REMOVE] What goes here: Four qualities the system must have, expressed as numbers or named mechanisms. Done when: Every line contains a number or a specific named mechanism. A line with neither is an aspiration — replace it. Good: NFR-2 A reorder suggestion for a shop with up to 500 items shall be returned within 4 seconds at the 95th percentile. Bad: NFR-2 The system should be fast, secure and responsive at all times. Suggested split for a project with a model: one on how fast a prediction comes back, one on security, one on what is recorded for later evaluation, one of your own choosing. The first and third are the two model-related items that did not belong in Section 5.2. Four honest numbers beat eight vague sentences, and you can add more later.
+
+=== TABLE 21 (1x1) ===
+[REMOVE] What goes here: The requirements you will build first — the smallest version of your system that is genuinely usable by someone. List five FR IDs from Section 5 (three to seven is acceptable) and two NFR IDs from Section 6, with one line each on why it is in. Done when: The reason column says why this one and not something else. Restating the requirement is not a reason. If everything feels essential, you have not made the choice yet — the point of this section is that most of your requirements are not in it. Good: FR-1.2 — Without upload validation every later feature receives broken data, so nothing downstream can be tested. Bad: FR-1.2 — This is an important feature for the system. A suggestion worth thinking about: your MVP probably should not include the model. Build the system so it works using the Level 0 baseline from Section 3 first, then add the model. That way a student whose model never works properly still has a working, demonstrable system to show at the end. FR-2.4, the fallback requirement, is often a better MVP choice than the model itself.
+
+=== TABLE 22 (8x3) ===
+FR / NFR ID | Requirement (short) | Why this one is in the MVP
+<FR-x.y> | <short description> | <Why this and not something else>
+<FR-x.y> | <short description> | <Why this and not something else>
+<FR-x.y> | <short description> | <Why this and not something else>
+<FR-x.y> | <short description> | <Why this and not something else>
+<FR-x.y> | <short description> | <Why this and not something else>
+<NFR-n> | <short description> | <Why this and not something else>
+<NFR-n> | <short description> | <Why this and not something else>
+
+=== TABLE 23 (1x1) ===
+[REMOVE] What goes here: Which requirements will be working by each project stage. The stages and their dates are given, so this is a sorting exercise, not a scheduling one. Done when: Every FR ID from Section 5 appears in exactly one row. An FR that appears in no row is a requirement you are not planning to build — either place it or move it out of Section 5. Your MVP from 7.1 belongs in the first row. Good: Sprint I — FR-1.1, FR-1.2, FR-1.3. Done when: I can upload a CSV, bad files are rejected by name, and the rows are visible in the database. Bad: Sprint I — Complete the frontend and backend and start the ML part. This plan will turn out to be wrong in places, and that is expected. When a requirement moves from one stage to another, log it in the Revision History with the reason. A plan that never changes is a plan nobody followed.
+
+=== TABLE 24 (7x3) ===
+Stage | Deliverable | Date
+Development Sprint I | Prototype / initial working model | 27 Sep 2026
+Development Sprint II | 50% functional application | 17 Oct 2026
+Development Sprint III | 75–80% functional application | 7 Nov 2026
+Testing & Validation | Test report and bug log | 17 Nov 2026
+Deployment & Documentation | Deployed application, user manual, technical documentation | 30 Nov 2026
+Final Presentation | Final report, presentation and viva | 5–10 Dec 2026
+
+=== TABLE 25 (6x4) ===
+Stage | What will be working by then | FR / NFR IDs | How I will know it is done
+Sprint I27 Sep | <Your MVP from 7.1> | <IDs> | <What you would demonstrate>
+Sprint II17 Oct | <What is added> | <IDs> | <What you would demonstrate>
+Sprint III7 Nov | <What is added> | <IDs> | <What you would demonstrate>
+Testing17 Nov | <What is tested, not what is built> | <IDs> | <What you would demonstrate>
+Deployment30 Nov | <Live URL and documentation> | <IDs> | <What you would demonstrate>
+
+=== TABLE 26 (1x1) ===
+[REMOVE] What goes here: The things your system stores. Fill the table for your most important entity; list the remaining entity names underneath. Done when: The entity you chose is one that an MVP requirement in 7.1 creates or updates.
+
+=== TABLE 27 (5x3) ===
+Field | Type | Constraint / Notes
+id | UUID | Primary key.
+<field> | <type> | <e.g. not null; unique; must not be a future date>
+<field> | <type> | <constraint>
+<field> | <type> | <constraint>
+
+=== TABLE 28 (1x1) ===
+[REMOVE] What goes here: One ER diagram covering every entity in 8.1, with cardinalities marked on every relationship. Done when: Every entity in 8.1 appears, and every line is labelled 1:1, 1:N or M:N.
+
+=== TABLE 29 (1x1) ===
+[REMOVE] What goes here: Choices where a reasonable person could have chosen otherwise, the option you rejected, and why. Done when: Each reason refers to something specific about your project — your dataset, your constraints, your timeline. A reason that would be equally true for every project in the class is not a reason. Good: Decision: aggregate sales to weekly totals. Rejected: predicting each day. Reason: the dataset has 340 days per shop, which gives roughly 48 weekly figures per item — too few to fit anything beyond an average. Bad: Decision: used React. Rejected: Angular. Reason: React is more popular and easier to learn. Write this yourself. It is the first thing you will be asked about at the viva, and the section an AI assistant will fill with reasons you cannot defend.
+
+=== TABLE 30 (4x4) ===
+# | Decision | Alternative rejected | Reason
+D1 | <What you chose> | <What you did not choose> | <Why, referring to your project>
+D2 | <What you chose> | <What you did not choose> | <Why, referring to your project>
+D3 | <What you chose> | <What you did not choose> | <Why, referring to your project>
+
+=== TABLE 31 (1x1) ===
+[REMOVE] What goes here: Demonstrations you will perform live to prove the MVP works. Written as things someone watches you do. Done when: Each names a concrete scenario with a concrete outcome and could be performed in under two minutes. At least one exercises a failure path. Every one of them tests a requirement you listed in 7.1. Good: AC-3 Uploading a file with the quantity column removed produces an error naming that column, and no data is stored. Bad: AC-3 The system works correctly for all inputs and handles errors properly.
+
+=== TABLE 32 (1x1) ===
+[REMOVE] What goes here: Things you have deliberately decided not to build, recorded so their absence reads as a decision rather than an oversight. Done when: Every item is something a reasonable person might have expected your system to do, and at least one is something you wanted to build and cut for time. Good: Per-supplier lead times. Suggestions assume stock arrives before the reorder window opens. Modelling lead time needs supplier data the dataset does not contain. Bad: In future we will add AI, blockchain, a mobile app and a voice assistant. This is not the Future Scope section of your synopsis. Future Scope is what you would like to add. Out of Scope is what you decided against for this release, and why. It is also different from 7.1 — things outside the MVP may still get built this semester; things listed here will not.
+
+=== TABLE 33 (1x1) ===
+[REMOVE] What goes here: Applies only if something in your system moves through named states — a job, an upload, a training run, a request. Done when: Every state is reachable from the initial state, every terminal state is marked terminal, and no state can be entered and never left.
+
+=== TABLE 34 (1x1) ===
+[REMOVE] What goes here: One row per requirement, linking it to the task card that implements it and the test case that verifies it. Start with your MVP requirements from 7.1. Done when: Every MVP requirement has a task card ID. A requirement with no card means either it is not planned or the plan is incomplete — both are worth knowing.
+
+=== TABLE 35 (4x5) ===
+FR ID | Requirement (short) | In MVP? | Task card ID | Test case ID
+FR-1.1 | <short description> | <Yes / No> | <board id> | <later>
+FR-1.2 | <short description> | <Yes / No> | <board id> | 
+<...> |  |  |  | 

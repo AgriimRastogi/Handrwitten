@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hws"
+version = "0.1.0"
+description = "Handwriting synthesis: stroke-level generative model + document renderer"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "h5py>=3.10",
+    "tqdm>=4.66",
+]
+
+# Installing with `pip install -e .` puts `hws` on the import path, so
+# `from hws.iam import ...` works from anywhere without sys.path hacks.
+[tool.setuptools.packages.find]
+include = ["hws*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

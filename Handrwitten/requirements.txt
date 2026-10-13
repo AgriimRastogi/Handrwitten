@@ -1,0 +1,14 @@
+# ── Phase 0: data pipeline ────────────────────────────────────────────────────
+# These are all you need for parsing, preprocessing and rendering.
+numpy>=1.26          # 2.x is fine; we avoid the APIs removed in 2.0
+scipy>=1.11          # savgol_filter for stroke denoising
+h5py>=3.10           # packed dataset storage
+tqdm>=4.66           # progress bars over 12k files
+
+# ── Dev ───────────────────────────────────────────────────────────────────────
+pytest>=8.0
+matplotlib>=3.8      # optional: quick raster previews while debugging
+
+# ── Phase 1+: training (install separately, see SETUP.md) ─────────────────────
+# torch is deliberately NOT pinned here because it needs a CUDA-specific
+# index URL. See SETUP.md for the command for your RTX 3050 (sm_86).

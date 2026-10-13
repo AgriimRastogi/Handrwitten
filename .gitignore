@@ -1,0 +1,42 @@
+# ── Data ──────────────────────────────────────────────────────────────────────
+# Never commit raw dataset or large binary checkpoints
+datas/
+data/
+Handrwitten/datas/
+Handrwitten/data/
+
+# Generated artifacts & checkpoints
+outputs/
+runs/
+checkpoints/
+Handrwitten/outputs/
+Handrwitten/runs/
+Handrwitten/checkpoints/
+*.h5
+*.hdf5
+*.pt
+*.ckpt
+*.onnx
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+Handrwitten/.pytest_cache/
+.ipynb_checkpoints/
+errors.log
+
+# ── Editors / OS ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

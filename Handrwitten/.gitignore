@@ -1,0 +1,35 @@
+# ── Data ──────────────────────────────────────────────────────────────────────
+# Never commit the corpus. IAM-OnDB is ~500 MB extracted and is licensed for
+# non-commercial research use — redistributing it via a public repo would
+# violate that licence. Everyone who clones this runs scripts/ to rebuild it.
+datas/
+data/
+
+# Generated artifacts
+outputs/
+runs/
+checkpoints/
+*.h5
+*.hdf5
+*.pt
+*.ckpt
+*.onnx
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ── Editors / OS ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
