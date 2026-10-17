@@ -4,10 +4,12 @@
 Root workspace directory for Agriim Rastogi's B.Tech CSE (AI) Capstone Project at GLA University, Greater Noida: **Stroke-Level Handwriting Synthesis: A Vector-Output Generative Model for Composable Handwritten Documents**.
 
 ## Active Submission Files
+- `README.md`: Master project documentation and architecture overview.
 - `SRS_v1.0_22515500004_HandwritingSynthesis.pdf`: Concise 10-page finalized PDF (down from 13 pages by tightening definitions without cutting any requirements, entities, or diagrams), 0 split tables, 0 split diagrams.
 - `teacherapproved.pdf`: Reference copy of the original 13-page PDF approved by the teacher.
 - `SRS_v1.0_22515500004_HandwritingSynthesis.docx`: Source Word document styled to GLA ML Projects template standards.
 - `SRS_Template_v1.0_ML_Projects-2.docx`: Reference university template.
+- `Handwriting_Synthesis_Presentation_GLA.pdf`: 7-slide minimal 16:9 widescreen presentation PDF.
 - `Handrwitten/`: Core codebase, scripts, tests, datasets, and guides.
 
 ## Review & Compliance Checklist
