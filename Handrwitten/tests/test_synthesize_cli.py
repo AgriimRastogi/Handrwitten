@@ -51,3 +51,25 @@ def test_synthesize_cli_execution(tmp_path: Path):
     assert 'stroke="#e8a0a0"' in content
     # Vector paths
     assert "<path" in content
+
+
+def test_pretrained_graves_dwell_advance_no_barcode_loop():
+    """Verify that the dwell-limited Graves attention patch advances without attractor barcode loops."""
+    from hws.pretrained_model import PretrainedGravesSynthesis
+
+    pretrained_dir = Path(__file__).resolve().parent.parent / "checkpoints" / "pretrained"
+    if not (pretrained_dir / "model.pt").is_file():
+        pytest.skip("Pretrained Graves checkpoint missing")
+
+    model = PretrainedGravesSynthesis(pretrained_dir, device="cpu", bias=1.0)
+    # Stress test on repetitive characters that historically triggered Alex Graves infinite loops
+    coords = model.generate("llllllll", seed=4, max_dwell=35)
+    assert coords.shape[0] > 0
+    # Must complete cleanly well before max_steps (1200)
+    assert len(coords) < 350
+    w_span = coords[:, 0].max() - coords[:, 0].min()
+    h_span = coords[:, 1].max() - coords[:, 1].min()
+    assert w_span > 0
+    assert h_span > 0
+    aspect = w_span / (h_span + 1e-5)
+    assert aspect > 1.5

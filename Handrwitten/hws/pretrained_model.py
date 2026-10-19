@@ -20,7 +20,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from hws.preprocess import normalize_scale, offsets_to_coords
+from hws.preprocess import denoise, normalize_scale, offsets_to_coords
 
 logger = logging.getLogger(__name__)
 
@@ -333,25 +333,32 @@ class PretrainedGravesSynthesis:
         stochastic: bool = True,
         seed: int | None = None,
         temp: float = 0.35,
-        max_search_seeds: int = 12,
+        max_search_seeds: int = 15,
+        max_dwell: int = 35,
     ) -> np.ndarray:
-        """Synthesize text into scaled, baseline-anchored, smooth (N, 4) stroke coordinates."""
-        from hws.preprocess import denoise
+        """Synthesize text into scaled, baseline-anchored, smooth (N, 4) stroke coordinates.
 
-        if not text.strip():
+        Uses dwell-limited monotonic advance on the soft-window attention centers to physically
+        prevent infinite attractor loops on repetitive characters (e.g. 'llllllll') and attention
+        stalls on unfamiliar glyphs (e.g. capital 'G').
+        """
+        clean_text = text.strip()
+        if not clean_text:
             return np.zeros((0, 4), dtype=np.float32)
 
+        if bias is not None and hasattr(self.model, "mixture"):
+            self.model.mixture.bias = bias
+
         # Encode with trailing sentinel space
-        clean_text = text.strip()
         c = self.tokenizer.encode(clean_text + " ").to(self.device)
         u = c.shape[1]
 
+        min_expected_pts = max(60, len(clean_text) * 14)
+        max_expected_pts = max(450, len(clean_text) * 38)
+
         seeds_to_try = [seed] if seed is not None else list(range(max_search_seeds))
         best_coords = None
-        best_score = -1
-
-        min_expected_pts = max(80, len(clean_text) * 10)
-        max_expected_pts = max(500, len(clean_text) * 38)
+        candidates = []
 
         for s in seeds_to_try:
             torch.manual_seed(s)
@@ -364,17 +371,32 @@ class PretrainedGravesSynthesis:
 
             outputs = []
             char_counts = np.zeros(u, dtype=int)
+            curr_char = 0
+            prev_char = 0
+            dwell = 0
 
             with torch.no_grad():
                 for t in range(max_steps):
                     x_with_w = torch.cat([x, w], dim=-1)
                     h1, hidden1 = self.model.lstm1(x_with_w, hidden1)
                     phi, k = self.model.window(h1, c, k)
+
+                    curr_char = int(phi[0, 0].argmax().item())
+                    char_counts[curr_char] += 1
+
+                    if curr_char == prev_char:
+                        dwell += 1
+                    else:
+                        prev_char = curr_char
+                        dwell = 0
+
+                    # Monotonic advance when dwell exceeds threshold
+                    if dwell > max_dwell and curr_char < u - 1:
+                        k = k + 0.8
+                        dwell = 0
+
                     w = self.model.window.matmul_3d(phi, c)
                     mixture, hidden2, hidden3 = self.model.compute_mixture(x, h1, w, hidden2, hidden3)
-
-                    curr_char = phi[0, 0].argmax().item()
-                    char_counts[curr_char] += 1
 
                     pi, mu_out, sd_out, ro, eos = mixture
                     comp = torch.multinomial(pi[0, 0], 1).item() if stochastic else pi[0, 0].argmax().item()
@@ -392,8 +414,7 @@ class PretrainedGravesSynthesis:
                     x_temp = torch.tensor([v[0].item(), v[1].item(), e], device=self.device).unsqueeze(0)
 
                     last_phi = phi[0, 0, u - 1].item()
-                    is_eos = x_temp[0, 2].item() > 0.5
-                    if last_phi > 0.8 or (curr_char == u - 1 and is_eos):
+                    if (last_phi > 0.6 or curr_char >= u - 1) and t >= min_expected_pts and (e > 0.4 or dwell >= 12):
                         x_temp[0, 2] = 1.0
                         outputs.append(x_temp)
                         break
@@ -401,7 +422,6 @@ class PretrainedGravesSynthesis:
                     outputs.append(x_temp)
                     x = x_temp.unsqueeze(0)
 
-            # Check coverage
             valid_chars = char_counts[:len(clean_text)]
             min_c = int(valid_chars.min()) if len(valid_chars) > 0 else 0
             total_pts = len(outputs)
@@ -427,15 +447,22 @@ class PretrainedGravesSynthesis:
             h_span = coords[:, 1].max() - coords[:, 1].min()
             aspect = w_span / (h_span + 1e-5)
 
+            if best_coords is None:
+                best_coords = coords
+
             if seed is not None:
                 return coords
 
-            # Quality criteria: all characters attended, valid aspect ratio, length proportional to text
-            if min_c >= 4 and aspect > 1.8 and min_expected_pts <= total_pts <= max_expected_pts:
-                return coords
+            # Discard runaway or abnormal geometries
+            if h_span > 90 or w_span > len(clean_text) * 28 or h_span < 15 or aspect < 1.8:
+                continue
 
-            if min_c > best_score:
-                best_score = min_c
-                best_coords = coords
+            if min_c >= 4 and min_expected_pts <= total_pts <= max_expected_pts:
+                score = min_c * 10.0 + aspect * 3.0
+                candidates.append((score, coords))
+
+        if candidates:
+            candidates.sort(key=lambda x: x[0], reverse=True)
+            return candidates[0][1]
 
         return best_coords if best_coords is not None else coords

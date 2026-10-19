@@ -62,7 +62,7 @@ def parse_args(args: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=None, help="Random seed for generation")
     parser.add_argument("--temp", type=float, default=0.35, help="Sampling temperature for Graves model (lower = neater, higher = more variation)")
     parser.add_argument("--style", type=int, default=0, help="Writer style ID index (0 for default)")
-    parser.add_argument("--bias", type=float, default=0.0, help="Graves model sampling neatness bias (b >= 0)")
+    parser.add_argument("--bias", type=float, default=1.0, help="Graves model sampling neatness bias (b >= 0)")
     parser.add_argument("--char-step-scale", type=float, default=0.10, help="Graves model attention advancement scale per step")
     parser.add_argument("--temperature", type=float, default=0.8, help="Transformer sampling temperature")
     parser.add_argument("--top-k", type=int, default=50, help="Top-k filtering threshold")
@@ -249,11 +249,13 @@ def main(cli_args: Sequence[str] | None = None) -> int:
             synthesized_lines.append(np.zeros((0, 4), dtype=np.float32))
 
     # 5. Render Page Layout
-    ink_style = InkStyle(color=args.color, width=args.width)
+    ink_style = InkStyle(color=args.color, width=args.width, bezier=True)
+    page_h = max(877.0, 100.0 + len(synthesized_lines) * 52.0) if args.ruled else max(240.0, 90.0 + len(synthesized_lines) * 52.0)
     layout = PageLayout(
         ruled=args.ruled,
         margin_rule=args.margin_rule,
-        height=max(877.0, 100.0 + len(synthesized_lines) * 44.0),
+        line_height=52.0,
+        height=page_h,
     )
 
     svg_content = render_page(synthesized_lines, layout=layout, style=ink_style)
