@@ -88,11 +88,35 @@ Despite its physical plausibility, the Graves recurrent framework exhibits five 
 - **Concept:** Discretized continuous coordinate space into quantized displacement tokens to eliminate MDN variance collapse.
 - **Outcome:** Completely eliminated `NaN` losses, but generated severe staircase artifacts. Human cursive relies on sub-millimeter motor smoothness; discrete binning stripped away micro-dynamics and natural ligatures.
 
-### 3. Autoregressive Continuous Transformer-MDN
-- **Concept:** Replaced recurrent LSTM with a causal multi-head self-attention and cross-attention Transformer decoder with diagonal guided attention loss ($\mathcal{L}_{\text{guided}}$).
-- **Outcome:** The training loss dropped rapidly to $-1.37$ (validation loss $0.0027$), and monotonic attention alignment was enforced mathematically.
-- **Visual Failure:** Despite excellent numerical losses, the generated strokes were visually broken into detached, Morse-code dashes with flickering pen states ($e_t \approx 0.5$).
-- **The Core Insight:** Pure self-attention computes dot-product similarities across all prior tokens without an explicit differential physics prior. It lacks the continuous recurrent momentum ($c_t = f_t c_{t-1} + i_t \tilde{c}_t$) of an LSTM. When predicting $\Delta x, \Delta y$ independently at each step via attention queries, the pen lacks physical inertia, causing high-frequency spatial jitter.
+### 3. Detailed Autopsy of Transformer Failures on Stroke Generation
+
+We tested two Transformer architectures: an earlier **Discrete Autoregressive Tokenizer Transformer** (512 spatial bins) and a **Continuous Guided-Attention Transformer-MDN** in $\mathbb{R}^2$. Both failed decisively when compared to the recurrent baseline. The specific failure modes were:
+
+#### A. The "Morse-Code" Detached Dashes (Lack of Mechanical Motor Inertia)
+- **Symptom:** Instead of drawing fluid, connected cursive paths with natural pen-down ligatures, the Transformer emitted short, broken, disconnected line segments and jagged squiggles.
+- **Root Cause:** Physical handwriting is fundamentally a continuous mechanical motor process governed by inertia, velocity $\dot{\mathbf{x}}(t)$, and acceleration $\ddot{\mathbf{x}}(t)$. An LSTM cell inherently acts as an integrator:
+  $$\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t$$
+  where $\mathbf{c}_t$ functions as an internal physical momentum reservoir.
+  In contrast, Transformer self-attention computes dot-product similarities across a static context window:
+  $$\text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+  It possesses **zero differential physics inductive bias**. At each timestep $t$, the query vector predicts $(\Delta x_t, \Delta y_t)$ and pen-lift probability $e_t$ virtually independently, causing high-frequency pen-up/pen-down flickering ($e_t \approx 0.5$) that shatters cursive strokes into disconnected dashes.
+
+#### B. The Metric Mirage: Numerical Loss vs. Perceptual Quality Divergence
+- **Symptom:** During training on CUDA RTX 3050, the continuous Transformer-MDN appeared to converge rapidly: total loss dropped from $+1.21$ down to $-1.37$ (validation loss $0.0027$) across 5 epochs. Mathematically, the model appeared to be succeeding.
+- **Visual Reality:** When sampled and rendered to SVG/PNG (`test_gla_university.png`), the output was completely illegible, fragmented, and chaotic.
+- **Root Cause:** In continuous Mixture Density Networks, NLL can decrease significantly simply by predicting tiny standard deviations ($\sigma \to 0$) around high-density clusters of points. The loss function optimizes point-wise likelihood, not topological stroke connectivity or legible character graphemes. Numerical loss drops cannot be equated with visual synthesis success.
+
+#### C. Quantization Cascading in Discrete Tokenizer Transformers
+- **Symptom:** The discrete Transformer model (predicting discrete spatial bins for $\Delta x, \Delta y$) produced blocky, staircase-like lines with deformed glyphs.
+- **Root Cause:** Discretizing continuous coordinates into 512 spatial bins strips away the sub-millimeter micro-dynamics of pen movement. Compounding autoregressive sampling errors in discrete token classification quickly knocked the sequence off trajectory, yielding jagged, robotic handwriting.
+
+#### D. Soft Attention Bleeding vs. Strict Monotonic Windows
+- **Symptom:** Characters bled into each other, skipping strokes or mixing parts of adjacent letters.
+- **Root Cause:** Standard softmax cross-attention naturally has "soft focus", distributing attention probability across multiple character tokens at once. While we introduced a diagonal Guided Attention penalty ($\mathcal{L}_{\text{guided}}$), soft attention still lacks the strict mathematical guarantee of Graves' monotonic Gaussian window ($\kappa_t = \kappa_{t-1} + \exp(k_t)$), allowing attention to diffuse and smear character boundaries.
+
+#### E. Autoregressive Inference Latency ($O(T)$ Quadratic KV-Cache)
+- **Symptom:** Generating a single 4-line handwritten page (1,500–2,000 stroke points) requires 2,000 sequential autoregressive decoding steps.
+- **Root Cause:** Unlike text generation where each step produces a whole word or sub-word (30–50 tokens per sentence), handwriting operates at the point level (20–40 points *per character*). Running 2,000 Transformer decoder steps with quadratic KV-cache attention is significantly slower and computationally heavier than an $O(1)$ recurrent LSTM step, while producing vastly inferior visual fluidity.
 
 ---
 
