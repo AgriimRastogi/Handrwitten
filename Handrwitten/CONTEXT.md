@@ -20,6 +20,7 @@ This directory (`Handrwitten/`) contains the core Python implementation, dataset
 - `detailedprojectguide.md`: 580+ line master technical viva defense guide with zero-jargon mathematical derivations, XML-to-SVG walkthroughs, and 12 model viva answers.
 - `scripts/generate_official_srs_v2.py`: Python generator script with exact pagination budgeting, `cantSplit` and `tblHeader` XML attributes.
 - `scripts/convert_docx_to_pdf.ps1`: PowerShell Word COM automation script.
+- `issues.md` (root): Comprehensive technical report on Graves LSTM failure modes, attempted mitigations, and comparative architectural evaluation (Mamba, Diffusion, Duration-based models).
 
 ## Core System Architecture & Decisions
 1. **D1: Dual-Mode Discrete Tokenization:** Linear move bins + $\text{asinh}$ jump bins with Cross-Entropy loss. Solves Graves 2013 MDN variance collapse ($\sigma \to 0$, log-loss $\to \text{NaN}$) and mode averaging.
