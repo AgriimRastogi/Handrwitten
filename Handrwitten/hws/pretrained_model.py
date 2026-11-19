@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+import re
 from collections import defaultdict
 from pathlib import Path
 from typing import List, Tuple
@@ -292,6 +293,112 @@ class IAMTokenizer:
         return eye[tokens].unsqueeze(0)
 
 
+# ── Hybrid Stroke Synthesis Templates & Physiological Motor Jitter ─────────────
+
+GLYPH_TEMPLATES = {
+    '/': [
+        np.array([
+            [0.0, -8.0, 0.0, 0.02],
+            [1.5, -4.0, 0.0, 0.02],
+            [3.0, 0.0, 0.0, 0.02],
+            [4.5, 4.0, 0.0, 0.02],
+            [6.0, 8.0, 0.0, 0.02],
+            [7.5, 12.0, 1.0, 0.02],
+        ], dtype=np.float32)
+    ],
+    '\\': [
+        np.array([
+            [0.0, 12.0, 0.0, 0.02],
+            [1.5, 8.0, 0.0, 0.02],
+            [3.0, 4.0, 0.0, 0.02],
+            [4.5, 0.0, 0.0, 0.02],
+            [6.0, -4.0, 0.0, 0.02],
+            [7.5, -8.0, 1.0, 0.02],
+        ], dtype=np.float32)
+    ],
+    '-': [
+        np.array([
+            [0.0, 2.0, 0.0, 0.02],
+            [2.5, 2.0, 0.0, 0.02],
+            [5.0, 2.0, 0.0, 0.02],
+            [7.5, 2.0, 1.0, 0.02],
+        ], dtype=np.float32)
+    ],
+    '|': [
+        np.array([
+            [0.0, 12.0, 0.0, 0.02],
+            [0.0, 6.0, 0.0, 0.02],
+            [0.0, 0.0, 0.0, 0.02],
+            [0.0, -6.0, 1.0, 0.02],
+        ], dtype=np.float32)
+    ],
+}
+
+
+def add_motor_jitter(stroke: np.ndarray, jitter_std: float = 0.25) -> np.ndarray:
+    """Add subtle physiological tremor and velocity modulation to synthetic strokes."""
+    res = stroke.copy()
+    n = len(res)
+    noise = np.random.normal(0, jitter_std, size=(n, 2))
+    weight = np.sin(np.linspace(0, np.pi, n))[:, None]
+    res[:, :2] += noise * weight
+    return res
+
+
+def synthesize_glyph_sequence(text: str, seed: int = 42) -> np.ndarray:
+    """Synthesize clean vector strokes for rare/unsupported standalone symbols."""
+    np.random.seed(seed)
+    strokes = []
+    cur_x = 0.0
+    for ch in text.strip():
+        tpl = GLYPH_TEMPLATES.get(ch, GLYPH_TEMPLATES['/'])[0]
+        stk = add_motor_jitter(tpl)
+        stk_shifted = stk.copy()
+        stk_shifted[:, 0] += cur_x
+        strokes.append(stk_shifted)
+        cur_x += (stk[:, 0].max() - stk[:, 0].min()) + 6.0
+    return np.vstack(strokes)
+
+
+def get_adaptive_dwell(ch: str) -> int:
+    """Return character-specific attention dwell ceiling."""
+    if ch in " .,;:!?-\"/()[]'":
+        return 12
+    elif ch.isdigit():
+        return 18
+    elif ch.isupper():
+        return 22
+    elif ch in "mwMWQ":
+        return 34
+    else:
+        return 28
+
+
+def sanitize_and_normalize(text: str) -> str:
+    """Normalize repeated non-alphanumeric punctuation and map unsupported tokens to natural equivalents."""
+    charmap = {
+        '&': 'and',
+        '@': 'at',
+        '+': 'plus',
+        '*': '-',
+        '_': '-',
+        '|': '/',
+        '{': '(',
+        '}': ')',
+        '<': '(',
+        '>': ')',
+    }
+    for k, v in charmap.items():
+        text = text.replace(k, f" {v} ")
+
+    def space_repeats(match):
+        s = match.group(0)
+        return " " + " ".join(list(s)) + " "
+
+    text = re.sub(r'([/\\#\-\*\=\_\+])\1+', space_repeats, text)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
 # ── High-Level Synthesis Wrapper ──────────────────────────────────────────────
 
 
@@ -338,19 +445,29 @@ class PretrainedGravesSynthesis:
     ) -> np.ndarray:
         """Synthesize text into scaled, baseline-anchored, smooth (N, 4) stroke coordinates.
 
-        Uses dwell-limited monotonic advance on the soft-window attention centers to physically
-        prevent infinite attractor loops on repetitive characters (e.g. 'llllllll') and attention
-        stalls on unfamiliar glyphs (e.g. capital 'G').
+        Uses character-adaptive dwell limiting and hybrid vector stroke synthesis to
+        physically eliminate Graves attractor barcode loops (e.g. 'HHHHHH', 'llllllll')
+        and out-of-distribution symbol knotting (e.g. '/////').
         """
-        clean_text = text.strip()
+        stripped = text.strip()
+        if not stripped:
+            return np.zeros((0, 4), dtype=np.float32)
+
+        # 1. Pure standalone symbol fallback (clean motor-jittered stroke trajectories)
+        if re.fullmatch(r'[\s/\\|\-]+', stripped):
+            return synthesize_glyph_sequence(stripped, seed=seed if seed is not None else 42)
+
+        # 2. Text normalization (breath spaces for repeated punctuation)
+        clean_text = sanitize_and_normalize(text)
         if not clean_text:
             return np.zeros((0, 4), dtype=np.float32)
 
         if bias is not None and hasattr(self.model, "mixture"):
             self.model.mixture.bias = bias
 
+        full_str = clean_text + " "
         # Encode with trailing sentinel space
-        c = self.tokenizer.encode(clean_text + " ").to(self.device)
+        c = self.tokenizer.encode(full_str).to(self.device)
         u = c.shape[1]
 
         min_expected_pts = max(60, len(clean_text) * 14)
@@ -390,8 +507,10 @@ class PretrainedGravesSynthesis:
                         prev_char = curr_char
                         dwell = 0
 
-                    # Monotonic advance when dwell exceeds threshold
-                    if dwell > max_dwell and curr_char < u - 1:
+                    # Dynamic character-adaptive dwell limiting
+                    active_ch = full_str[min(curr_char, len(full_str) - 1)]
+                    limit = min(max_dwell, get_adaptive_dwell(active_ch)) if max_dwell else get_adaptive_dwell(active_ch)
+                    if dwell > limit and curr_char < u - 1:
                         k = k + 0.8
                         dwell = 0
 

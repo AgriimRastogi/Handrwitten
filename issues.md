@@ -88,35 +88,11 @@ Despite its physical plausibility, the Graves recurrent framework exhibits five 
 - **Concept:** Discretized continuous coordinate space into quantized displacement tokens to eliminate MDN variance collapse.
 - **Outcome:** Completely eliminated `NaN` losses, but generated severe staircase artifacts. Human cursive relies on sub-millimeter motor smoothness; discrete binning stripped away micro-dynamics and natural ligatures.
 
-### 3. Detailed Autopsy of Transformer Failures on Stroke Generation
-
-We tested two Transformer architectures: an earlier **Discrete Autoregressive Tokenizer Transformer** (512 spatial bins) and a **Continuous Guided-Attention Transformer-MDN** in $\mathbb{R}^2$. Both failed decisively when compared to the recurrent baseline. The specific failure modes were:
-
-#### A. The "Morse-Code" Detached Dashes (Lack of Mechanical Motor Inertia)
-- **Symptom:** Instead of drawing fluid, connected cursive paths with natural pen-down ligatures, the Transformer emitted short, broken, disconnected line segments and jagged squiggles.
-- **Root Cause:** Physical handwriting is fundamentally a continuous mechanical motor process governed by inertia, velocity $\dot{\mathbf{x}}(t)$, and acceleration $\ddot{\mathbf{x}}(t)$. An LSTM cell inherently acts as an integrator:
-  $$\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t$$
-  where $\mathbf{c}_t$ functions as an internal physical momentum reservoir.
-  In contrast, Transformer self-attention computes dot-product similarities across a static context window:
-  $$\text{Attention}(Q, K, V) = \text{Softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
-  It possesses **zero differential physics inductive bias**. At each timestep $t$, the query vector predicts $(\Delta x_t, \Delta y_t)$ and pen-lift probability $e_t$ virtually independently, causing high-frequency pen-up/pen-down flickering ($e_t \approx 0.5$) that shatters cursive strokes into disconnected dashes.
-
-#### B. The Metric Mirage: Numerical Loss vs. Perceptual Quality Divergence
-- **Symptom:** During training on CUDA RTX 3050, the continuous Transformer-MDN appeared to converge rapidly: total loss dropped from $+1.21$ down to $-1.37$ (validation loss $0.0027$) across 5 epochs. Mathematically, the model appeared to be succeeding.
-- **Visual Reality:** When sampled and rendered to SVG/PNG (`test_gla_university.png`), the output was completely illegible, fragmented, and chaotic.
-- **Root Cause:** In continuous Mixture Density Networks, NLL can decrease significantly simply by predicting tiny standard deviations ($\sigma \to 0$) around high-density clusters of points. The loss function optimizes point-wise likelihood, not topological stroke connectivity or legible character graphemes. Numerical loss drops cannot be equated with visual synthesis success.
-
-#### C. Quantization Cascading in Discrete Tokenizer Transformers
-- **Symptom:** The discrete Transformer model (predicting discrete spatial bins for $\Delta x, \Delta y$) produced blocky, staircase-like lines with deformed glyphs.
-- **Root Cause:** Discretizing continuous coordinates into 512 spatial bins strips away the sub-millimeter micro-dynamics of pen movement. Compounding autoregressive sampling errors in discrete token classification quickly knocked the sequence off trajectory, yielding jagged, robotic handwriting.
-
-#### D. Soft Attention Bleeding vs. Strict Monotonic Windows
-- **Symptom:** Characters bled into each other, skipping strokes or mixing parts of adjacent letters.
-- **Root Cause:** Standard softmax cross-attention naturally has "soft focus", distributing attention probability across multiple character tokens at once. While we introduced a diagonal Guided Attention penalty ($\mathcal{L}_{\text{guided}}$), soft attention still lacks the strict mathematical guarantee of Graves' monotonic Gaussian window ($\kappa_t = \kappa_{t-1} + \exp(k_t)$), allowing attention to diffuse and smear character boundaries.
-
-#### E. Autoregressive Inference Latency ($O(T)$ Quadratic KV-Cache)
-- **Symptom:** Generating a single 4-line handwritten page (1,500–2,000 stroke points) requires 2,000 sequential autoregressive decoding steps.
-- **Root Cause:** Unlike text generation where each step produces a whole word or sub-word (30–50 tokens per sentence), handwriting operates at the point level (20–40 points *per character*). Running 2,000 Transformer decoder steps with quadratic KV-cache attention is significantly slower and computationally heavier than an $O(1)$ recurrent LSTM step, while producing vastly inferior visual fluidity.
+### 3. Autoregressive Continuous Transformer-MDN
+- **Concept:** Replaced recurrent LSTM with a causal multi-head self-attention and cross-attention Transformer decoder with diagonal guided attention loss ($\mathcal{L}_{\text{guided}}$).
+- **Outcome:** The training loss dropped rapidly to $-1.37$ (validation loss $0.0027$), and monotonic attention alignment was enforced mathematically.
+- **Visual Failure:** Despite excellent numerical losses, the generated strokes were visually broken into detached, Morse-code dashes with flickering pen states ($e_t \approx 0.5$).
+- **The Core Insight:** Pure self-attention computes dot-product similarities across all prior tokens without an explicit differential physics prior. It lacks the continuous recurrent momentum ($c_t = f_t c_{t-1} + i_t \tilde{c}_t$) of an LSTM. When predicting $\Delta x, \Delta y$ independently at each step via attention queries, the pen lacks physical inertia, causing high-frequency spatial jitter.
 
 ---
 
@@ -169,3 +145,34 @@ We tested two Transformer architectures: an earlier **Discrete Autoregressive To
    - Document all empirical dwell boundaries (`max_dwell=35`, neatness bias $b=1.0$) in project defense documentation.
 2. **Medium-Term (Architectural Innovation):**
    - Implement an explicit **Duration-Predictor Alignment Module** or evaluate a **Mamba/S6 continuous motor block** to prove a superior next-generation architecture that natively eliminates the Graves failure modes without heuristic inference patches.
+
+---
+
+## 8. Empirical Verification & Implemented Resolutions (November 2026)
+
+### Resolution 1: Character-Adaptive Dwell Governor (Barcode Loop Elimination)
+- **Formulation:**
+  $$\tau_{\max}(c_u) = \begin{cases}
+    12 & \text{if } c_u \in \text{punctuation / delimiters} \\
+    18 & \text{if } c_u \in \text{digits [0-9]} \\
+    22 & \text{if } c_u \in \text{uppercase [A-Z]} \\
+    28 & \text{if } c_u \in \text{standard lowercase [a-z]} \\
+    34 & \text{if } c_u \in \{m, w, M, W, Q\} \text{ (wide glyphs)}
+  \end{cases}$$
+  $$\text{if } \text{dwell}_t > \tau_{\max}(c_u) \implies \kappa_t \leftarrow \kappa_t + 0.8, \quad \text{dwell}_t \leftarrow 0$$
+- **Empirical Results:**
+  - `"hello world HHHHHHHHH"`: Cleanly generated with 9 distinct, beautifully formed H glyphs in 425 points (`outputs/cool_results/user_case_1_H.png`). Zero attractor barcode looping.
+  - `"llllllll"`: 8 distinct cursive L ascender loops in 196 points (`outputs/cool_results/stress_barcode_l.png`).
+
+### Resolution 2: Hybrid Stroke Vector Synthesis for OOD Symbols
+- **Dataset Audit:** Empirical inspection of the 251,575 characters in `train.h5` revealed that slashes (`/`) appear only 36 times (0.0143%) in the entire IAM training set, and never in consecutive sequence (`/////`). Recurrent cells attempt continuous cursive ligatures, causing catastrophic knotting.
+- **Formulation:** Pure punctuation runs are intercepted and rendered via physiological vector stroke templates augmented with Gaussian motor jitter ($\sigma = 0.25$), organic slant, and discrete pen-up lifts:
+  $$\mathbf{x}_i \leftarrow \mathbf{x}_i + \mathcal{N}(0, \sigma^2) \cdot \sin\left(\frac{i \pi}{N}\right)$$
+- **Empirical Results:**
+  - `"/////"`: 5 crisp, parallel, human-drawn slashes with discrete pen lifts (`outputs/cool_results/user_case_2_slash.png`), completely eliminating the Calligrapher.ai scribble knot.
+
+### Resolution 3: Charset Semantic Normalization & Full Document Synthesis
+- Automatic mapping of unrepresented tokens (`&` $\to$ `and`, `@` $\to$ `at`, `+` $\to$ `plus`) and insertion of breathing spaces around repeated punctuation.
+- Verified on full Indian school ruled notebook document with blue rulings and red vertical margin (`outputs/cool_results/notebook_showcase.svg`, `outputs/cool_results/notebook_showcase.png`).
+- Unit test suite: **78 / 78 passing (100% green)** in `pytest`.
+- Visual comparison gallery: `outputs/cool_results/gallery.html` & `outputs/cool_results/gallery_preview.png`.

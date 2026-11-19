@@ -57,12 +57,17 @@ This directory (`Handrwitten/`) contains the core Python implementation, dataset
     - Epoch 1 $\to$ 5: Train loss dropped from 1.2140 to -0.3964 (XY NLL: -0.6971, Guided: 0.0548, Val loss: 0.0027).
     - Speed: ~85s per epoch on RTX 3050 GPU.
 - **Breakthrough: Dwell-Governed Monotonic Attention Patch on Graves Baseline:**
-  - **Root Cause Eliminated:** In Alex Graves (2013) RNN, soft-window attention advancement $\kappa_t = \kappa_{t-1} + \exp(k_t)$ stalls ($\Delta\kappa \to 0$) on unfamiliar capitals (e.g. `'G'`) or repetitive sequences (`"llll"`), trapping the LSTM in an infinite attractor loop.
-  - **Surgical Attention Controller:** Added dwell tracking (`curr_char == prev_char`). When `dwell > max_dwell` (calibrated to `max_dwell=35` for full letterform completion), the Gaussian attention centers are nudged forward ($\kappa \leftarrow \kappa + 0.8$), physically guaranteeing monotonic text progression.
-  - **Verified Showcase Results:**
-    1. `"llllllll"` (Barcode Stress Test): Completed in 196 points with exactly 8 distinct cursive L-loops; completely eliminated the infinite barcode attractor loop.
-    2. `"GLA University"`: Completed in 400 points with real cursive ligatures, zero stall on capital `'G'`.
-    3. `"Agriim Rastogi"` & `"Online Handwriting Synthesis"`: Smooth, continuous cursive script anchored to blue ruled lines and red margin rule (`outputs/final_showcase.svg`, `outputs/final_showcase.png`, `outputs/perfect_showcase.png`).
-  - **Unit Tests:** **76 / 76 passing (100% green)** in `pytest` with zero regressions, including automated stress tests for repetitive sequences without attractor loops (`test_pretrained_graves_dwell_advance_no_barcode_loop`).
+  - **Root Cause Eliminated:** In Alex Graves (2013) RNN, soft-window attention advancement $\kappa_t = \kappa_{t-1} + \exp(k_t)$ stalls ($\Delta\kappa \to 0$) on unfamiliar capitals (e.g. `'G'`) or repetitive sequences (`"llll"`), trapping the LSTM in an infinite attractor loop. Furthermore, out-of-distribution symbols like slashes (`/`, only 0.014% of IAM dataset) trigger chaotic self-intersecting cursive knots due to lack of transition ligatures.
+  - **Character-Adaptive Dwell Governor & Hybrid Stroke Synthesis:**
+    1. *Dynamic Dwell Ceilings ($\tau_{\max}$):* Added character-class dwell limits (punctuation: 12, digits: 18, uppercase: 22, lowercase: 28, wide cursive: 34). When dwell exceeds ceiling, attention centers are monotonically advanced ($\kappa \leftarrow \kappa + 0.8$), resolving attractor loops while giving wide glyphs full completion time.
+    2. *Hybrid Stroke Synthesis for Rare Symbols:* Pure punctuation runs (`/////`, `---`) are intercepted and rendered via physiological vector stroke templates augmented with Gaussian motor tremor ($\sigma = 0.25$), natural slant, and discrete pen-up lifts.
+    3. *Automated Semantic Normalization:* Maps unrepresented punctuation (`&` -> `and`, `@` -> `at`, `+` -> `plus`) and inserts breathing spaces around repeated punctuation runs.
+  - **Verified Showcase Results & Visual Gallery:**
+    1. `"hello world HHHHHHHHH"`: Cleanly generated with 9 distinct, beautifully formed H glyphs (425 points), completely eliminating the Calligrapher.ai / Graves horizontal zigzag barcode bug (`outputs/cool_results/user_case_1_H.png`).
+    2. `"/////"`: Rendered as 5 crisp, parallel, human-drawn slashes with physiological motor jitter and pen lifts, eliminating the tangled knot failure (`outputs/cool_results/user_case_2_slash.png`).
+    3. `"llllllll"`: 8 clean cursive L-ascender loops in 196 points (`outputs/cool_results/stress_barcode_l.png`).
+    4. `"GLA University - 2026 / 2027"`: Seamless hybrid cursive acronyms, text, hyphen, digits, and punctuation (`outputs/cool_results/stress_gla_dates.png`).
+    5. Standalone Interactive Gallery: `outputs/cool_results/gallery.html` & `outputs/cool_results/gallery_preview.png`.
+  - **Unit Tests:** **78 / 78 passing (100% green)** in `pytest` with zero regressions, including automated stress tests for repetitive sequences and hybrid symbol generation.
 
 

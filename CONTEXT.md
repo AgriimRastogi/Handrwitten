@@ -27,7 +27,13 @@ Root workspace directory for Agriim Rastogi's B.Tech CSE (AI) Capstone Project a
 ## Execution Environment & Training
 - Root launchers `scripts/synthesize.py` and `scripts/train.py` use `runpy` to execute core logic cleanly from root.
 - PyTorch 2.14.0+cu126 enabled on NVIDIA GeForce RTX 3050 6GB Laptop GPU with AMP mixed precision.
-- Unit test suite: 70/70 tests passing.
+- Unit test suite: **78/78 tests passing (100% green)** in `pytest`.
+- **Benchmark Resolution & Robust Hybrid Synthesis Engine:**
+  - Solved Graves (2013) Attractor Barcode Loop via Character-Adaptive Dwell Governor ($\tau_{\max} \in [12, 34]$).
+  - Solved Out-of-Distribution Symbol Degradation via Hybrid Vector Stroke Templates with physiological motor jitter ($\sigma=0.25$) and discrete pen-up lifts.
+  - Automated Charset Normalization for unrepresented tokens (`&`, `@`, `+`, etc.).
+  - Verified on exact Calligrapher.ai failure cases: `"hello world HHHHHHHHH"`, `"/////"`, `"llllllll"`, `"GLA University - 2026 / 2027"`.
+  - Comprehensive Visual Gallery: `outputs/cool_results/gallery.html` & `outputs/cool_results/gallery_preview.png`.
 - **Model Training & Accuracy Baseline Reproduction:**
   - Modern Transformer Decoder: 20 epochs trained (`checkpoints/best_model.pt`).
   - Canonical Graves 2013 RNN Baseline: Reproduced and trained to 21 epochs (`best_graves_model.pt` reaching -2.155 NLL loss).

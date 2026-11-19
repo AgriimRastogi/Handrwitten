@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from scripts.synthesize import main as synthesize_main, wrap_text_to_lines
@@ -73,3 +74,35 @@ def test_pretrained_graves_dwell_advance_no_barcode_loop():
     assert h_span > 0
     aspect = w_span / (h_span + 1e-5)
     assert aspect > 1.5
+
+
+def test_pretrained_graves_hybrid_symbol_generation():
+    """Verify that pure symbol sequences like '/////' synthesize clean discrete strokes without knotting."""
+    from hws.pretrained_model import PretrainedGravesSynthesis
+
+    pretrained_dir = Path(__file__).resolve().parent.parent / "checkpoints" / "pretrained"
+    if not (pretrained_dir / "model.pt").is_file():
+        pytest.skip("Pretrained Graves checkpoint missing")
+
+    model = PretrainedGravesSynthesis(pretrained_dir, device="cpu", bias=1.0)
+    coords = model.generate("/////", seed=42)
+    assert coords.shape[0] == 30  # 5 slashes * 6 points each
+    pen_ups = np.sum(coords[:, 2] > 0.5)
+    assert pen_ups == 5  # Each slash ends with a pen-lift
+
+
+def test_pretrained_graves_repetitive_capitals_no_attractor_loop():
+    """Verify that repetitive capital runs like 'hello world HHHHHHHHH' synthesize without attractor loops."""
+    from hws.pretrained_model import PretrainedGravesSynthesis
+
+    pretrained_dir = Path(__file__).resolve().parent.parent / "checkpoints" / "pretrained"
+    if not (pretrained_dir / "model.pt").is_file():
+        pytest.skip("Pretrained Graves checkpoint missing")
+
+    model = PretrainedGravesSynthesis(pretrained_dir, device="cpu", bias=1.0)
+    coords = model.generate("hello world HHHHHHHHH", seed=42)
+    assert coords.shape[0] > 100
+    # Must complete cleanly without blowing up to max_steps (1200)
+    assert len(coords) < 650
+    w_span = coords[:, 0].max() - coords[:, 0].min()
+    assert w_span > 150.0
